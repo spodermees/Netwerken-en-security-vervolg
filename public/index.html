@@ -1,12 +1,17 @@
 <!DOCTYPE html>
-<html>
-    <h1>
-        Chatapplicatie netwerken en security vervolg
-    </h1>
-    <h2>
-        Ivo is Ivo
-    </h2>
-    <body>
-        
-    </body>
+<html lang="nl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MQTT WebSockets Chat</title>
+</head>
+<body>
+    <h1>MQTT Chat</h1>
+    <input id="message" type="text" placeholder="Typ een bericht...">
+    <button onclick="sendMessage()">Verstuur</button>
+    <ul id="messages"></ul>
+
+    <script src="https://unpkg.com/mqtt/dist/mqtt.min.js"></script>
+    <script src="mqtt-client.js"></script>  <!-- Dit laadt mqtt-client.js -->
+</body>
 </html>

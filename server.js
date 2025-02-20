@@ -3,15 +3,15 @@ const path = require('path');
 
 const app = express();
 
-// Serve static files from the 'public' directory
+// Statische bestanden serveren (HTML, JS, CSS, etc.)
 app.use(express.static(path.join(__dirname, 'public')));
 
-// Default route to serve index.html
+// Standaardroute om index.html te laden
 app.get('/', (req, res) => {
     res.sendFile(path.join(__dirname, 'public', 'index.html'));
 });
 
-const PORT = process.env.PORT || 3000;
+const PORT = process.env.PORT || 3000; // Gebruik poort 3000 i.p.v. 80 voor dev
 app.listen(PORT, () => {
-    console.log(`Server running on port ${PORT}`);
+    console.log(`🚀 Server draait op http://localhost:${PORT}`);
 });
