@@ -1,17 +1,98 @@
 <!DOCTYPE html>
 <html lang="nl">
+<style>
+    .container {
+        display: block;
+        width: 50%;
+        margin: 0 auto;
+        padding: 10px;
+        font-size: 16px;
+        text-align: center;
+        border: 1px solid #ccc;
+        border-radius: 5px;
+    }
+</style>
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>MQTT WebSockets Chat</title>
 </head>
+
 <body>
+
     <h1>MQTT Chat</h1>
-    <input id="message" type="text" placeholder="Typ een bericht...">
+
+    <input class="container" id="username" type="text" placeholder="Gebruikersnaam...">
+    <input class="container" id="password" type="password" placeholder="Wachtwoord...">
+    <button onclick="login()">Inloggen</button>
+
+    <input class="container" id="message" type="text" placeholder="Typ een bericht...">
     <button onclick="sendMessage()">Verstuur</button>
     <ul id="messages"></ul>
 
     <script src="https://unpkg.com/mqtt/dist/mqtt.min.js"></script>
-    <script src="mqtt-client.js"></script>  <!-- Dit laadt mqtt-client.js -->
+    <script>
+        const brokerUrl = "ws://127.0.0.1:1884"; // Change to your MQTT broker
+        const topic = "chatroom";
+
+        // Connect to MQTT broker
+        let client;
+
+        function login() {
+            const username = document.getElementById("username").value;
+            const password = document.getElementById("password").value;
+            client = mqtt.connect(brokerUrl, {
+                username: username,
+                password: password
+            });
+
+            client.on("connect", () => {
+                console.log("Connected to MQTT broker");
+                client.subscribe(topic, (err) => {
+                    if (!err) {
+                        console.log("Subscribed to topic: " + topic);
+                    }
+                });
+            });
+
+            client.on("message", (receivedTopic, message) => {
+                if (receivedTopic === topic) {
+                    const msg = message.toString();
+                    displayMessage(msg);
+                }
+            });
+        }
+
+
+
+        function sendMessage() {
+    const input = document.getElementById("message");
+    const msg = input.value.trim();
+    const username = document.getElementById("username").value.trim();  // Haal de gebruikersnaam op
+    if (msg && username) {
+        // Voeg de gebruikersnaam toe aan het bericht
+        const fullMessage = `${username}: ${msg}`;
+        client.publish(topic, fullMessage);  // Publiceer het bericht met de gebruikersnaam
+        input.value = "";  // Maak het invoerveld leeg
+    }
+}
+
+
+        document.getElementById("message").addEventListener("keydown", function (event) {
+            if (event.key === "Enter") {
+                event.preventDefault(); // Prevent form submission
+                sendMessage();
+            }
+        });
+
+        function displayMessage(msg) {
+            const messagesList = document.getElementById("messages");
+            const li = document.createElement("li");
+            li.textContent = msg;
+            messagesList.appendChild(li);
+        }
+    </script>
 </body>
+
 </html>

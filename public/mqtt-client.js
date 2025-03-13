@@ -1,32 +1,37 @@
-const MQTT_BROKER = 'ws://localhost:9001'; // Pas aan naar je server IP als extern
-const MQTT_TOPIC = 'chat';
+const brokerUrl = "wss://broker.emqx.io:8084/mqtt"; // Change to your MQTT broker
+const topic = "chatroom";
 
-const client = mqtt.connect(MQTT_BROKER);
+// Connect to MQTT broker
+const client = mqtt.connect(brokerUrl);
 
-client.on('connect', () => {
-    console.log("✅ Verbonden met MQTT WebSockets");
-    client.subscribe(MQTT_TOPIC);
+client.on("connect", () => {
+    console.log("Connected to MQTT broker");
+    client.subscribe(topic, (err) => {
+        if (!err) {
+            console.log("Subscribed to topic: " + topic);
+        }
+    });
 });
 
-client.on('message', (topic, message) => {
-    if (topic === MQTT_TOPIC) {
-        displayMessage(message.toString());
+client.on("message", (receivedTopic, message) => {
+    if (receivedTopic === topic) {
+        const msg = message.toString();
+        displayMessage(msg);
     }
 });
 
 function sendMessage() {
     const input = document.getElementById("message");
-    const text = input.value.trim();
-    
-    if (text) {
-        client.publish(MQTT_TOPIC, text);
+    const msg = input.value.trim();
+    if (msg) {
+        client.publish(topic, msg);
         input.value = "";
     }
 }
 
 function displayMessage(msg) {
-    const msgList = document.getElementById("messages");
-    const newMsg = document.createElement("li");
-    newMsg.textContent = msg;
-    msgList.appendChild(newMsg);
+    const messagesList = document.getElementById("messages");
+    const li = document.createElement("li");
+    li.textContent = msg;
+    messagesList.appendChild(li);
 }
